@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard interactivo de análisis de rechazos BPI con filtros por región, determinante y mes.">
+  <meta name="theme-color" content="#14233f">
+  <title>Dashboard de rechazos BPI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Inicio del dashboard">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M6 23.5V17M13 23.5V10M20 23.5V5.5M27 23.5V13" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M4 27H29" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <span class="brand-copy"><strong>BPI <span>/</span> Analítica</strong><small>Monitoreo operativo</small></span>
+      </a>
+      <div class="topbar-right">
+        <span id="validationBadge" class="status-pill"><span class="status-dot"></span>Validando fuente</span>
+        <span class="topbar-divider" aria-hidden="true"></span>
+        <span class="topbar-label">Dashboard de rechazos</span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-line"></span>INTELIGENCIA DE NEGOCIO</div>
+          <h1 id="pageTitle">Dashboard de <span>rechazos</span></h1>
+          <p>Analiza el comportamiento de los rechazos y descubre sus principales razones con una vista que puedes segmentar por región, determinante y mes.</p>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5m0 14h16M8 15v-3m4 3V7m4 8v-5m4 8V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><span class="hero-stat-label">Base analizada</span><strong id="globalTotal">—</strong><span class="hero-stat-foot">registros agregados</span></div>
+        </div>
+      </section>
+
+      <section class="section-block" aria-labelledby="monthTitle">
+        <div class="section-heading">
+          <div><div class="section-kicker">VISTA GENERAL</div><h2 id="monthTitle">Volumen por mes</h2><p>Conteo global por <strong>ARCHIVO ORIGEN</strong>. Estos indicadores no cambian al aplicar filtros.</p></div>
+          <span class="subtle-label"><span class="tiny-dot"></span><span id="sourceCountLabel">— archivos de origen</span></span>
+        </div>
+        <div id="monthKpis" class="month-grid" aria-live="polite">
+          <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+        </div>
+      </section>
+
+      <section class="filter-section" aria-labelledby="filterTitle">
+        <div class="filter-heading">
+          <div class="filter-heading-left">
+            <span class="filter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16l-6.2 7.1v5.2l-3.6 1.8v-7L4 5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div><h2 id="filterTitle">Explora los datos</h2><p>Combina los filtros para profundizar en una selección.</p></div>
+          </div>
+          <button id="resetFilters" class="button button-quiet" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11a8 8 0 1 1 2.2 5.5M4 5v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Limpiar filtros</button>
+        </div>
+        <div class="filters-grid">
+          <label class="filter-control" for="regionFilter"><span class="field-label">Región</span><span class="select-wrap"><select id="regionFilter"><option value="">Todas las regiones</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></label>
+          <label class="filter-control" for="determinantFilter"><span class="field-label">Determinante</span><span class="select-wrap"><select id="determinantFilter"><option value="">Todos los determinantes</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></label>
+          <label class="filter-control" for="monthFilter"><span class="field-label">Mes</span><span class="select-wrap"><select id="monthFilter"><option value="">Todos los meses</option></select><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></label>
+        </div>
+        <div class="filter-footer"><div id="activeFilters" class="active-filters"><span class="filter-chip">Vista general · Sin filtros</span></div><button id="exportCsv" class="button button-outline" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Exportar resumen CSV</button></div>
+      </section>
+
+      <section class="section-block results-section" aria-labelledby="reasonTitle">
+        <div class="section-heading results-heading">
+          <div><div class="section-kicker">RESULTADO DE LA SELECCIÓN</div><h2 id="reasonTitle">Razón agrupada</h2><p>El conteo y la participación se recalculan con los filtros seleccionados.</p></div>
+          <div class="result-summary"><strong id="filteredTotal">—</strong><span>rechazos en la selección</span><i id="filterState">Vista general</i></div>
+        </div>
+
+        <div class="reason-layout">
+          <div class="reason-insight panel">
+            <div class="panel-heading"><div><h3>Principales razones</h3><p>Razones con mayor volumen en la selección</p></div><span class="panel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5m0 14h16M8 15v-3m4 3V7m4 8v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></div>
+            <div id="reasonChart" class="bar-chart" aria-live="polite"></div>
+          </div>
+          <div class="insight-note panel">
+            <div class="note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5a7 7 0 0 0-4.4 12.5c.9.7 1.4 1.6 1.4 2.5h6c0-.9.5-1.8 1.4-2.5A7 7 0 0 0 12 3.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 21h5M9.5 18.5h5M12 7v5m-2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+            <div class="note-kicker">LECTURA RÁPIDA</div>
+            <h3 id="insightTitle">Identifica oportunidades</h3>
+            <p id="insightText">Selecciona una región, determinante o mes para conocer qué razones concentran más rechazos.</p>
+            <div class="note-divider"></div>
+            <div class="note-stat"><span>Razón principal</span><strong id="leadingReason">—</strong></div>
+            <div class="note-stat"><span>Participación</span><strong id="leadingShare">—</strong></div>
+          </div>
+        </div>
+
+        <div class="section-subheading"><div><h3>Todos los motivos</h3><p>Conteo por cada categoría de razón agrupada.</p></div><span id="reasonCountLabel" class="count-label">— categorías</span></div>
+        <div id="reasonKpis" class="reason-grid" aria-live="polite"></div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-brand"><span class="footer-mark">B</span><span><strong>Analítica BPI</strong><small>Dashboard operativo de rechazos</small></span></div>
+        <div class="footer-meta"><span id="dataValidation">Validación de fuentes</span><span class="footer-separator">·</span><span>Datos agregados · Sin información personal</span></div>
+      </footer>
+      <div id="errorPanel" class="error-panel" hidden role="alert"><strong>No fue posible cargar los datos.</strong><span>Verifica que <code>data.json</code> esté en la misma carpeta que esta página y abre el dashboard a través de GitHub Pages o un servidor local.</span></div>
+    </main>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
